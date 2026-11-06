@@ -1,0 +1,70 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "Q_i <- max(0, Q_i + r_i); action = argmin[-V work(a) + sum_i Q_i r_hat_i(a)]",
+      "name": "adaptive_queues",
+      "role": "treatment"
+    },
+    {
+      "description": "constant (alpha, beta, gamma) fitted to ADAPTIVE's R2 depth targets on training seeds",
+      "name": "fixed_matched",
+      "role": "comparator"
+    },
+    {
+      "description": "consistency queue removed",
+      "name": "no_c",
+      "role": "ablation"
+    },
+    {
+      "description": "textbook drift-plus-penalty with the same V and queues (expected identical)",
+      "name": "dpp_twin",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "name": "reserve_supply_plant",
+    "status": "to be implemented from the audit's plant description (reserve R, supply 0.10/tick, 40-tick deficits, cost 0.15 kappa, Sample/Update actions)"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "48ad448b7446dc9d749459476cb79b9668c7c6913bf6dff94ddeb0db30a1c6cc",
+  "hypothesis_h0": "No fixed triple matches all three depths; a Lyapunov drift-plus-penalty twin reproduces ADAPTIVE's action sequence tick for tick; in R1 with reserve-funded actions the fraction of post-deficit ticks with R = 0 and stale supply exceeds 70%.",
+  "hypothesis_h1": "At matched E/S/C violation depths (all three within tolerance), the virtual-queue ADAPTIVE controller uses at least 0.03 less work per tick than FIXED weights.",
+  "id": "T08_dual_weights_matching_and_trap",
+  "inputs": [],
+  "metric": "mean work per tick (lower is better)",
+  "metric_higher_is_better": false,
+  "n_replicates": 16,
+  "notes": "Report the joint-match score and the absorbing-state fraction as extras; the primary verdict is only meaningful if a match within tolerance exists.",
+  "primary_contrast": [
+    "adaptive_queues",
+    "fixed_matched"
+  ],
+  "quick_replicates": 8,
+  "secondary_contrasts": [
+    [
+      "adaptive_queues",
+      "no_c"
+    ],
+    [
+      "adaptive_queues",
+      "dpp_twin"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "No setting achieved the predeclared joint matching tolerance (primary worst normalised mismatch 2.741); with reserve-funded actions the controller enters an absorbing zero-reserve state (3,062 positive-supply ticks with R = 0); FIXED - ADAPTIVE work +0.295 [0.257, 0.334] in R2.",
+  "source_project": "D:/ISRM Dual Weights (V3_PROTOCOL.md, V3_REPORT.md)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.03,
+  "title": "Dual weights: can fixed weights be matched to the virtual-queue controller, and is the controller a textbook drift-plus-penalty rule?"
+}

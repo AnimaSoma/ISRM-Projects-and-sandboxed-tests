@@ -1,0 +1,70 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "E = 0.45(1 - thr) + 0.35 clip((aspd - 12)/8) + 0.20 batt; dS = mean of capped predictor and nav residuals; dC = 0.45 osc + 0.25 sat + 0.20 low + 0.10 conf; U = E - 0.7 dS - 0.7 dC; hold when U <= -0.75 for 3 s",
+      "name": "isrm_gated_hold",
+      "role": "treatment"
+    },
+    {
+      "description": "hold when the PID health score (0.25 alt + 0.20 aspd + 0.20 xtrack + 0.15 low + 0.10 sat + 0.10 conf, with integral and derivative terms) >= 1.35 for 3 s",
+      "name": "pid_gated_hold",
+      "role": "comparator"
+    },
+    {
+      "description": "PID alarm with 3 s dwell and hysteresis, no ISRM channels",
+      "name": "pid_dwell_only",
+      "role": "ablation"
+    },
+    {
+      "description": "PID flies the mission unaided",
+      "name": "no_intervention",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "name": "energy_limited_plant",
+    "status": "to be implemented: second-order airspeed/altitude plant with throttle-limited energy, engine-multiplier disturbance steps, mission completion scored"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "31db37412d7bc08ab93d4ce455c59368033e092655b237af4ca78c75ba71b20a",
+  "hypothesis_h0": "The two gates are within +/-5% on throttle integral and alarm burden; a 3 s dwell on the PID alarm alone removes >= 25% of alarms; ISRM's channels add no lead time.",
+  "hypothesis_h1": "On an independent energy-limited plant with engine-multiplier steps, an ISRM-gated hold (U <= -0.75 sustained 3 s) reduces the recovery throttle integral by at least 10% relative to a PID-score-gated hold (score >= 1.35 sustained 3 s) at equal mission completion.",
+  "id": "T07_pid_sidecar_energy_plant",
+  "inputs": [],
+  "metric": "recovery throttle integral as a fraction of the no-intervention run (lower is better)",
+  "metric_higher_is_better": false,
+  "n_replicates": 24,
+  "notes": "Mission completion must be scored; the original benefit coincided with abandoning the mission (100% LOITER in recovery).",
+  "primary_contrast": [
+    "isrm_gated_hold",
+    "pid_gated_hold"
+  ],
+  "quick_replicates": 8,
+  "secondary_contrasts": [
+    [
+      "isrm_gated_hold",
+      "pid_dwell_only"
+    ],
+    [
+      "pid_gated_hold",
+      "no_intervention"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "Recovery-phase PID alarm burden 19.2-32.1% (ACTIVE) vs 62.6-66.3% (SHADOW); throttle integral in the energy deficit not reduced (5664.7/7318.2/5594.1 vs 5653.3/5554.2/5675.9 %-s); the only intervention was a sustained CONSERVE_CRITICAL LOITER after which the mission was never resumed.",
+  "source_project": "D:/PID+ISRM, D:/isrm_ardupilot_phase_compare",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.1,
+  "title": "ISRM sidecar over PID: ISRM-gated hold vs PID-score-gated hold on a synthetic energy-limited plant"
+}

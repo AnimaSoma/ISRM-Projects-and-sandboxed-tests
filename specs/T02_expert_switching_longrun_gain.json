@@ -1,0 +1,148 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "CUSUM event controller, theta=0.5, gamma=0.8, refractory delay+1 (the original fixed configuration)",
+      "name": "event_fixed",
+      "role": "treatment"
+    },
+    {
+      "description": "EWMA scanner from the 26-candidate grid, selected on 4 dev worlds by the original cost rule relative to event_fixed (allowed 0.5 pp deficit)",
+      "name": "adaptive_cost_selected",
+      "role": "comparator"
+    },
+    {
+      "description": "EWMA scanner from the 26-candidate grid with highest dev accuracy at work <= event_fixed",
+      "name": "adaptive_budget_selected",
+      "role": "comparator"
+    },
+    {
+      "description": "EWMA scanner from the 26-candidate grid with highest dev accuracy",
+      "name": "adaptive_accuracy_first",
+      "role": "comparator"
+    },
+    {
+      "description": "EWMA scanner from a 96-point fine grid with highest dev accuracy at work <= event_fixed",
+      "name": "adaptive_budget_fine",
+      "role": "comparator"
+    },
+    {
+      "description": "Event family (24 theta x gamma) selected by the same cost rule relative to adaptive_accuracy_first: the selection-symmetry control",
+      "name": "event_cost_selected_sym",
+      "role": "control"
+    },
+    {
+      "description": "Event family selected by highest dev accuracy at work <= adaptive_accuracy_first",
+      "name": "event_budget_selected_sym",
+      "role": "control"
+    },
+    {
+      "description": "Periodic scan with the largest period whose dev work <= event_fixed",
+      "name": "periodic_budget_matched",
+      "role": "comparator"
+    },
+    {
+      "description": "Scan every batch: the accuracy ceiling for observer-based serving",
+      "name": "dense_scan",
+      "role": "control"
+    },
+    {
+      "description": "Initial scan only: the persistence floor",
+      "name": "never_scan",
+      "role": "control"
+    },
+    {
+      "description": "Scans exactly when a regime change becomes observable (uses the hidden schedule)",
+      "name": "oracle",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "bank": {
+      "batch_size": 8,
+      "calib_samples": 4096,
+      "delay": 2,
+      "dim": 8,
+      "horizon": 4096,
+      "lr": 0.5,
+      "n_regimes": 8,
+      "nonlinearity": 0.4,
+      "persistence": 320,
+      "train_samples": 2048,
+      "train_steps": 300
+    },
+    "families": {
+      "adaptive": "gamma in {0.8,0.95,0.99} x (beta, margin, max_gap) in 8 cells, plus strong (0.8,0.95,0.03,64) and quiet (0.8,0.95,1,4096)",
+      "event": "theta in {0, 1/32, 1/16, 1/8, 1/4, 1/2, 1, 2} x gamma in {0.8, 0.95, 0.99}",
+      "fine": "beta in {0.8,0.95} x margin in {0,.01,.02,.03,.05,.1} x max_gap in {16,...,4096}",
+      "periodic": "P in {2,3,4,6,8,12,16,24,32,48,64}"
+    },
+    "n_dev_worlds": 4,
+    "name": "frozen_bank"
+  },
+  "equivalence_margin": 0.2,
+  "frozen_at": "2026-11-06T14:59:04Z",
+  "frozen_hash": "5fd8823c3bc5f55b308e78ad3b134f22d6b6117195d40cbc8498b609b2a861d6",
+  "hypothesis_h0": "The gain is absent, or it is an artefact of the asymmetric selection rule: applying the same cost rule to the event family (symmetric arm) reverses the sign, and a fine-grid budget-matched EWMA scanner is within 0.2 pp of the event controller.",
+  "hypothesis_h1": "In an independently generated frozen-bank world (8 regimes, persistence 320, delay 2, 4,096 batches), the fixed CUSUM event controller (theta 0.5, gamma 0.8) beats the cost-selected EWMA scanner by at least 0.25 percentage points of whole-stream accuracy.",
+  "id": "T02_expert_switching_longrun_gain",
+  "inputs": [],
+  "metric": "whole-stream accuracy (percentage points)",
+  "metric_higher_is_better": true,
+  "n_replicates": 12,
+  "notes": "Verdict is on the primary contrast only. The interpretation key is the pair of secondary contrasts (event_fixed - adaptive_budget_fine) and (event_cost_selected_sym - adaptive_accuracy_first): if the first is within +/-0.2 pp and the second is negative, the original gain is attributed to the selection rule, not to the detector. Work per input, final-quarter accuracy and scan counts are recorded as extras.",
+  "primary_contrast": [
+    "event_fixed",
+    "adaptive_cost_selected"
+  ],
+  "quick_replicates": 6,
+  "secondary_contrasts": [
+    [
+      "event_fixed",
+      "adaptive_budget_fine"
+    ],
+    [
+      "event_fixed",
+      "adaptive_budget_selected"
+    ],
+    [
+      "event_fixed",
+      "adaptive_accuracy_first"
+    ],
+    [
+      "event_cost_selected_sym",
+      "adaptive_accuracy_first"
+    ],
+    [
+      "event_budget_selected_sym",
+      "adaptive_accuracy_first"
+    ],
+    [
+      "event_fixed",
+      "periodic_budget_matched"
+    ],
+    [
+      "oracle",
+      "event_fixed"
+    ],
+    [
+      "dense_scan",
+      "event_fixed"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "At persistence 320, delay 2, 4,096 batches, all four widths show positive whole-stream accuracy gains against the cost-selected adaptive controller: +0.358 to +0.400 pp (lower CI bounds +0.22 to +0.27) with +0.46% to +5.47% extra work. 'The long-run accuracy gain is real, with a measurable price.'",
+  "source_project": "D:/Virtual Astrocytes (ISRM_LIMITS_RESULTS.md, ISRM_GAINS.md, ISRM_REGIME_MAP_RESULTS.md)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.25,
+  "title": "Expert switching: event controller long-run accuracy gain vs cost-selected adaptive scanner"
+}

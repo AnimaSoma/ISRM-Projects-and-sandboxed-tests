@@ -1,0 +1,21 @@
+[project]
+name = "isrm-sandbox"
+version = "0.1.0"
+description = "Independent, isolated validation tests for ISRM claims"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<2.0",
+  "scipy>=1.11",
+  "pandas>=2.0",
+  "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q -ra --basetemp=.pytest_tmp"
+markers = [
+  "protocol: software and isolation invariants that must always pass",
+  "verdict: executes a scientific claim in quick mode and records a ledger entry; never asserts the claim itself",
+  "formalism: exact algebraic properties of the ISRM utility as written, checked without simulation",
+]

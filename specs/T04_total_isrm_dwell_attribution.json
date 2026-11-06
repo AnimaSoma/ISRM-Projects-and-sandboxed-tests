@@ -1,0 +1,79 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "three-term utility with model switching and paid recalibration (alpha 0.4, beta 0.35, gamma 0.25 frozen)",
+      "name": "isrm_full",
+      "role": "treatment"
+    },
+    {
+      "description": "adaptive energy-only switching plus ISRM's 1.5 s dwell and switching margin",
+      "name": "adaptive_energy_dwell",
+      "role": "comparator"
+    },
+    {
+      "description": "adaptive energy-only switching as in the original v3 comparator",
+      "name": "adaptive_energy_only",
+      "role": "comparator"
+    },
+    {
+      "description": "fixed energy-only controller",
+      "name": "fixed_energy_only",
+      "role": "comparator"
+    },
+    {
+      "description": "ISRM utility with switching disabled",
+      "name": "isrm_no_switching",
+      "role": "ablation"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "name": "ball_avoidance_arena",
+    "status": "to be implemented independently (2D arena, paired seeds, stationary grid regime)"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "d6aad761dd5e56f39f37a4c181401e141a23d617d64d1190df5d3986ebb4539c",
+  "hypothesis_h0": "The dwell-only comparator closes at least 80% of the +1.347 s gap; the three-term utility adds nothing beyond switching hygiene.",
+  "hypothesis_h1": "ISRM three-term switching beats an adaptive energy-only controller that is given ISRM's own dwell and margin (a dwell-only comparator) by at least 0.5 s survival on the stationary grid.",
+  "id": "T04_total_isrm_dwell_attribution",
+  "inputs": [],
+  "metric": "survival seconds (120 s cap)",
+  "metric_higher_is_better": true,
+  "n_replicates": 128,
+  "notes": "The original highlighted cells were selected after inspecting all results; use fresh paired seeds only.",
+  "primary_contrast": [
+    "isrm_full",
+    "adaptive_energy_dwell"
+  ],
+  "quick_replicates": 32,
+  "secondary_contrasts": [
+    [
+      "isrm_full",
+      "adaptive_energy_only"
+    ],
+    [
+      "isrm_full",
+      "fixed_energy_only"
+    ],
+    [
+      "isrm_no_switching",
+      "isrm_full"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "v3: ISRM vs adaptive energy-only +1.347 s survival [+1.140, +1.552] on the stationary grid; vs fixed energy-only -7.073 s [-7.308, -6.838]; ISRM switched 1.22x per run vs 13.50x for the adaptive comparator; disabling switching improved default energy +4.08 [2.42, 5.80].",
+  "source_project": "D:/Total ISRM/benchmarks (v3 report)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.5,
+  "title": "Ball-avoidance arena: is the v3 ISRM switching gain over adaptive energy-only explained by dwell/hysteresis?"
+}

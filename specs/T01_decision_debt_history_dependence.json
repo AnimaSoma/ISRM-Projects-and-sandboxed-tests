@@ -1,0 +1,134 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "manuscript controller, lambda_eps = 0.5, rho = 0.10, six preparation episodes; debt equation runs on every trial including the test",
+      "name": "isrm_debt",
+      "role": "treatment"
+    },
+    {
+      "description": "identical controller with lambda_eps = 0 (the manuscript's matched comparator)",
+      "name": "matched_no_debt",
+      "role": "comparator"
+    },
+    {
+      "description": "lambda_eps = 0; the filter's hazard is learned from how often the adopted model is surprised and persists across the context reset",
+      "name": "adaptive_hazard_no_debt",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0; escalation test adds 0.5 x a leaky sum of max(0, q - 1/2) that is never settled by revision",
+      "name": "leaky_accumulator_no_debt",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 1.0, the value the original simulation code used",
+      "name": "isrm_debt_lambda1",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0.5, rho = 0.05 (manuscript predicts a larger effect, about 19 trials)",
+      "name": "isrm_debt_rho005",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0.5, rho = 0.80 (manuscript predicts about 1.4 trials)",
+      "name": "isrm_debt_rho080",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0.5 with two preparation episodes instead of six (manuscript predicts no change once debt is at equilibrium)",
+      "name": "isrm_debt_2episodes",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "capacities": {
+      "deferred": 0.35,
+      "resolved": 1.0
+    },
+    "controller": {
+      "broadcast_slope": 0.5,
+      "c_broadcast": 6.0,
+      "c_check": 0.35,
+      "c_hold": 0.25,
+      "c_revise": 1.0,
+      "e_check": 0.25,
+      "e_revise": 0.55,
+      "hazard": 0.05,
+      "horizon": 8,
+      "settle_frac": 1.0,
+      "u": 1.0
+    },
+    "name": "changepoint_task",
+    "task": {
+      "accuracy": 0.62,
+      "initial_rule": 1,
+      "prep_episodes": 6,
+      "prep_trials": 40,
+      "test_trials": 40,
+      "world_hazard": 0.0
+    }
+  },
+  "equivalence_margin": 2.0,
+  "frozen_at": "2026-11-06T15:21:34Z",
+  "frozen_hash": "41c9533b2a1c8936f5217867326184e8464abd15d3d00d1402ff5b5f2f7e2415",
+  "hypothesis_h0": "The effect is absent or small at the printed parameters; or conventional state-carrying controllers that contain no debt term (a hazard-learning filter; a leaky accumulator without settlement) produce a history effect of the same size, in which case the design does not discriminate decision debt from ordinary adaptive control.",
+  "hypothesis_h1": "Re-implemented from the written equations with the printed parameters (lambda_eps 0.5, rho 0.10, hazard 0.05, accuracy 0.62, horizon 8, broadcast cost 6.0, capacities 1.0 / 0.35), the history effect (trials to escalation after resolved minus after deferred preparation) exceeds the matched controller's by at least 5 trials.",
+  "id": "T01_decision_debt_history_dependence",
+  "inputs": [],
+  "metric": "history effect: trials to escalation after resolved preparation minus after deferred preparation (same test stream)",
+  "metric_higher_is_better": true,
+  "n_replicates": 400,
+  "notes": "Replicate = simulated participant; both conditions and all arms share the participant's streams, so the matched arm's effect is exactly zero by construction (an implementation check, as the manuscript says). Interpretation key: the claim is distinctive only if isrm_debt beats matched_no_debt AND the two no-debt state-carrying controls do not. Magnitude context from the theory audit: the printed 12.7 was produced with lambda_eps = 1.0 and frozen debt during the test; at the printed lambda_eps = 0.5 the auditor's re-derivation gives about 8.3 trials. Record per-condition escalation trials, censoring at 41 and carried debt as extras.",
+  "primary_contrast": [
+    "isrm_debt",
+    "matched_no_debt"
+  ],
+  "quick_replicates": 100,
+  "secondary_contrasts": [
+    [
+      "adaptive_hazard_no_debt",
+      "matched_no_debt"
+    ],
+    [
+      "leaky_accumulator_no_debt",
+      "matched_no_debt"
+    ],
+    [
+      "isrm_debt",
+      "leaky_accumulator_no_debt"
+    ],
+    [
+      "isrm_debt_lambda1",
+      "isrm_debt"
+    ],
+    [
+      "isrm_debt_rho005",
+      "isrm_debt"
+    ],
+    [
+      "isrm_debt",
+      "isrm_debt_rho080"
+    ],
+    [
+      "isrm_debt",
+      "isrm_debt_2episodes"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "With the parameters listed in Section 10.7 and 400 simulated participants per cell, the ISRM agent reaches escalation after 24.5 trials following resolved preparation and 11.7 after deferred preparation, a difference of 12.7 trials (d = 1.12). The matched controller shows a difference of exactly 0.0 trials, as it must. ... it is 19 trials at rho = 0.05 and 1.4 trials at rho = 0.80, and it is essentially flat in the number of deferred episodes once debt has reached equilibrium.",
+  "source_project": "D:/ISRM_manuscript1.md sections 2.2, 5.1 and 10.7 (the simulation code is not on D:/; it lives in the manuscript's artifact store)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 5.0,
+  "title": "Decision debt: history dependence at matched belief and capacity (manuscript section 5.1)"
+}

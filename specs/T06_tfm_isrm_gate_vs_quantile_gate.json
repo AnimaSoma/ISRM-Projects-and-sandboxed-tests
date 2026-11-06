@@ -1,0 +1,92 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "U(a) = a y_hat - beta |a| u (1 + kappa min(D/u,3)) (1 + lambda min(max(R,0)/ln2, 3)) - c |a - x|, argmax, grid beta x lambda on dev",
+      "name": "p5_isrm_gate",
+      "role": "treatment"
+    },
+    {
+      "description": "enter +1 if q0.2 > c + m, -1 if q0.8 < -(c + m); exit on sign flip; same 9-cell tuning budget",
+      "name": "p4_quantile_gate",
+      "role": "comparator"
+    },
+    {
+      "description": "trade on the sign of the point forecast net of cost",
+      "name": "p3_point_rule",
+      "role": "comparator"
+    },
+    {
+      "description": "P5 with the pressure multiplier forced to lambda = 1",
+      "name": "p5_lambda1",
+      "role": "ablation"
+    },
+    {
+      "description": "hold the previous position",
+      "name": "p1_persistence",
+      "role": "control"
+    },
+    {
+      "description": "never trade",
+      "name": "p0_flat",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "fee_bps_per_leg": [
+      5,
+      1
+    ],
+    "name": "synthetic_basis_carry",
+    "status": "to be implemented: AR(1) basis with regime shifts, carry, half-spread costs, frozen conformal quantile forecaster"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "133e81cff7c5b9bdca83858f79aa775da8bd78f4773503cd617cbcfd83732648",
+  "hypothesis_h0": "|P5 - P4| < 0.1 |P4 - P3| and the pressure ablation (lambda = 1) never helps; the only effective ingredient is the uncertainty penalty P4 already has.",
+  "hypothesis_h1": "Over a frozen quantile forecaster on synthetic AR(1) basis plus carry with realistic costs, the ISRM gate P5 beats the quantile gate P4 by at least 0.10 net units per block at 5 bps/leg over 60 out-of-sample day-blocks.",
+  "id": "T06_tfm_isrm_gate_vs_quantile_gate",
+  "inputs": [],
+  "metric": "net units per day-block at 5 bps/leg",
+  "metric_higher_is_better": true,
+  "n_replicates": 60,
+  "notes": "Public venue data could replace the synthetic world; the original data (ValidAlpha pairs_1m) is proprietary and must not be used here.",
+  "primary_contrast": [
+    "p5_isrm_gate",
+    "p4_quantile_gate"
+  ],
+  "quick_replicates": 20,
+  "secondary_contrasts": [
+    [
+      "p5_isrm_gate",
+      "p3_point_rule"
+    ],
+    [
+      "p5_lambda1",
+      "p5_isrm_gate"
+    ],
+    [
+      "p4_quantile_gate",
+      "p3_point_rule"
+    ],
+    [
+      "p1_persistence",
+      "p5_isrm_gate"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "P5 - P4 = +0.0305 units net at 5 bps/leg; mean daily +0.0020, 95% CI [-0.0253, +0.0374], p = 0.4725; -0.274 at 1 bps; the pressure term lambda was tuned to 0 and forced lambda = 1 cost -0.18; NO DEMONSTRATED IMPROVEMENT.",
+  "source_project": "D:/VA/tfm_isrm_experiment (RESULTS.md, PREREGISTRATION.md)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.1,
+  "title": "Forecast-gated trading: ISRM three-term gate (P5) vs uncertainty-threshold gate (P4) on synthetic basis/carry"
+}

@@ -1,0 +1,15 @@
+# virtual environment and package caches (recreate with uv, see README)
+.venv/
+.uv-cache/
+
+# python and pytest artefacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+
+# editor and OS noise
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

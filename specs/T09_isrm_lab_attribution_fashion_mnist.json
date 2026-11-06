@@ -1,0 +1,81 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "three-term U arbitration over exits with learned plasticity",
+      "name": "isrm_native",
+      "role": "treatment"
+    },
+    {
+      "description": "same psi/phi, conventional arbitration",
+      "name": "matched_native_control",
+      "role": "comparator"
+    },
+    {
+      "description": "best fixed exit depth selected on dev",
+      "name": "fixed_depth_selected",
+      "role": "comparator"
+    },
+    {
+      "description": "U arbitration without self-model updates",
+      "name": "isrm_native_noupdate",
+      "role": "ablation"
+    },
+    {
+      "description": "one-line confidence threshold router tuned on dev",
+      "name": "confidence_router",
+      "role": "comparator"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "budget_ru": 1200,
+    "feedback_delay": 8,
+    "name": "fashion_mnist_multi_exit",
+    "status": "requires torch and the public Fashion-MNIST release; data manifest to be added with SHA-256 of the four raw files"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "9af76a716291b796ad07e14121418e4c44722e257dc0640b8038e5234ce31555",
+  "hypothesis_h0": "The accuracy difference is within [-0.01, +0.05] with sign-flip p > 0.05 and cost per completed task is 1.0-2.5 RU higher; a dev-tuned confidence router beats the U-router in the binding-budget regime.",
+  "hypothesis_h1": "With at least 10 training seeds, a 4-exit residual network on Fashion-MNIST arbitrated by the three-term U beats the matched control (same psi/phi, conventional arbitration) by at least 0.01 sealed accuracy without higher cost per completed task.",
+  "id": "T09_isrm_lab_attribution_fashion_mnist",
+  "inputs": [],
+  "metric": "sealed-partition accuracy",
+  "metric_higher_is_better": true,
+  "n_replicates": 10,
+  "notes": "Only real-data study with a positive attribution contrast; underpowered at 5 seeds. GPU recommended (about 15 min per seed on an RTX 5070 in the original).",
+  "primary_contrast": [
+    "isrm_native",
+    "matched_native_control"
+  ],
+  "quick_replicates": 4,
+  "secondary_contrasts": [
+    [
+      "isrm_native",
+      "fixed_depth_selected"
+    ],
+    [
+      "isrm_native_noupdate",
+      "isrm_native"
+    ],
+    [
+      "confidence_router",
+      "isrm_native"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "isrm_native - matched_native_control accuracy +0.0241 [+0.0039, +0.0442] (5-cluster bootstrap) but exact sign-flip p = 0.125 and t(4) CI [-0.008, +0.056]; cost per completed task +1.837 [+0.683, +2.992] worse; verdict NO_ADVANTAGE_DEMONSTRATED.",
+  "source_project": "D:/NeuralNets/isrm_lab (RESULTS.md, CRITICAL_REVIEW)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.01,
+  "title": "Native three-term U on Fashion-MNIST: attribution contrast against the matched arbitration control"
+}

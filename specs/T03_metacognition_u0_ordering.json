@@ -1,0 +1,97 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "U0(a) = alpha E_after - beta (S_after - S_now) - gamma (C_after - C_now), simplex calibrated on dev blocks, receding horizon H=4, execute first step",
+      "name": "isrm_u0",
+      "role": "treatment"
+    },
+    {
+      "description": "cyclic full-service schedule",
+      "name": "fixed_fair",
+      "role": "comparator"
+    },
+    {
+      "description": "V_H + V_cont + lambda_B E_after with the shared forecaster",
+      "name": "conventional_mpc",
+      "role": "comparator"
+    },
+    {
+      "description": "V_H + V_cont + alpha E_after - beta dS - gamma dC (extended utility)",
+      "name": "u_plus",
+      "role": "comparator"
+    },
+    {
+      "description": "w_E E_after - w_S S_after - w_C C_after with the same weights as U0 (must be decision-identical)",
+      "name": "linear_twin",
+      "role": "control"
+    },
+    {
+      "description": "never acts",
+      "name": "hold_all",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "budget": {
+      "B0": 6,
+      "Bmax": 12,
+      "refill_ample": 6,
+      "refill_scarce": 1.5
+    },
+    "horizon": 4,
+    "name": "metacog_budget",
+    "status": "to be implemented from the audit's compact spec",
+    "tasks": 6,
+    "ticks": 256
+  },
+  "equivalence_margin": 0.03,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "0522e9c1712dbadb13bffc29979a334ac197095b8cb202b1a5d7c10022f5611f",
+  "hypothesis_h0": "U0 scores below FIXED_FAIR (the deficit is a property of an objective with no value or deadline term: horizon-end dS rewards deferral), U_PLUS is within +/-0.03 of MPC, and U0 is decision-identical to the weighted-sum twin.",
+  "hypothesis_h1": "In an independently built 6-service shared-budget simulator following the written contract (AR(1) latents, Kalman observation, DAG coupling, deadline-weighted J), receding-horizon U0 with a calibrated simplex scores at least FIXED_FAIR + 0.03 on scarce-coupled cells.",
+  "id": "T03_metacognition_u0_ordering",
+  "inputs": [],
+  "metric": "J = value-weighted share of correct answers at deadlines (scarce-coupled cells)",
+  "metric_higher_is_better": true,
+  "n_replicates": 64,
+  "notes": "Replicate = base-seed block (paired across arms). Also record missing-answer rate and the ample-vs-scarce difference-in-differences as extras to test the procrastination mechanism.",
+  "primary_contrast": [
+    "isrm_u0",
+    "fixed_fair"
+  ],
+  "quick_replicates": 16,
+  "secondary_contrasts": [
+    [
+      "isrm_u0",
+      "conventional_mpc"
+    ],
+    [
+      "u_plus",
+      "conventional_mpc"
+    ],
+    [
+      "isrm_u0",
+      "linear_twin"
+    ],
+    [
+      "isrm_u0",
+      "hold_all"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "ISRM_U0 - CONVENTIONAL_MPC = -0.214 [-0.234, -0.193] (HARMFUL_IN_TESTED_RANGE); U0 is -0.063 [-0.085, -0.043] below the cyclic FIXED_FAIR schedule; ISRM_U_PLUS - MPC = +0.003 [-0.002, +0.009]; U0 and LINEAR_EQUIVALENT: 0 decision mismatches in 2,560 episodes.",
+  "source_project": "D:/Multi ISRM/isrm_metacognition_benchmark (VERDICT.md, MATHEMATICAL_CONTRACT.md)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.03,
+  "title": "Shared-budget metacognition: ordering U0 < FIXED_FAIR < MPC ~ U_PLUS and the U0 = weighted-sum identity"
+}

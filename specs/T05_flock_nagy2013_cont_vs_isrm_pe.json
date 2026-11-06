@@ -1,0 +1,105 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "prediction-error-regulated switching (CUSUM on standardised max innovation, basins FOLLOW/COPY/IGNORE, budget E, re-implemented from the audit's compact spec)",
+      "name": "isrm_pe",
+      "role": "treatment"
+    },
+    {
+      "description": "continuous salience down-weighting of poorly predicted neighbours (the original winner)",
+      "name": "cont",
+      "role": "comparator"
+    },
+    {
+      "description": "topological local flocking model without any supervisor",
+      "name": "substrate_local_enhanced",
+      "role": "comparator"
+    },
+    {
+      "description": "same regulator on raw rate residuals",
+      "name": "raw_trigger",
+      "role": "ablation"
+    },
+    {
+      "description": "minimum-surprise model switching without CUSUM/budget",
+      "name": "mms",
+      "role": "ablation"
+    },
+    {
+      "description": "constant-velocity extrapolation",
+      "name": "persistence_cv",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "name": "pigeon_replay_track_r",
+    "replicate_unit": "held-out flight",
+    "sample_hz": 10,
+    "status": "to be implemented: independent loader (11 whitespace columns, grid snap, reliability, airborne > 5 m/s), outcome-blind onset detector, Track R replay"
+  },
+  "equivalence_margin": null,
+  "frozen_at": "2026-11-06T15:08:01Z",
+  "frozen_hash": "0c571e609e822d52fad4cc64059a2538b856a7a41a534c34cc297830a786e0d8",
+  "hypothesis_h0": "CONT is lower (d about -0.09 +/- 0.03), ISRM-PE is within 0.01 of its substrate, and the regulator is nearly inert at 10 Hz because the heading-innovation floor (sigma_th0 ~0.004 rad) silences the CUSUM.",
+  "hypothesis_h1": "Re-implemented from the written controller notes on the raw trajectoriesD2.zip, ISRM-PE's onset-window loss is lower than CONT's by at least 0.05 energy-score units.",
+  "id": "T05_flock_nagy2013_cont_vs_isrm_pe",
+  "inputs": [
+    {
+      "description": "Nagy et al. 2013 pigeon flock trajectories (3 flocks x 10 birds, 15 flights, 10 Hz)",
+      "path": "D:/Flock ISRM/data/raw/pigeon_nagy2013/trajectoriesD2.zip",
+      "sha256": "715a3b91d31c0678be8ab5170ce824d25480ce061c1665b1f71733bc52384f34"
+    },
+    {
+      "description": "Nagy et al. 2010 pigeon flock trajectories (1 flock, 15 flights, 5 Hz) for the sampling-rate comparison",
+      "path": "D:/Flock ISRM/data/raw/pigeon_nagy2010/pigeonflocks_trajectories.zip",
+      "sha256": "7b7f6636c0d8eba49dfb788a86da841216018cddf579984d974682e8affe7d2d"
+    }
+  ],
+  "metric": "onset-window energy-score loss (lower is better)",
+  "metric_higher_is_better": false,
+  "n_replicates": 15,
+  "notes": "Replicate = held-out flight (paired across arms). Cheap data-only pre-checks to record as extras: Stage-P1 lambda ~0.96 and sigma_th0 ~0.004 rad at 10 Hz versus 0.48 and 0.021 rad at 5 Hz; detector yield 85-97 onsets per fold.",
+  "primary_contrast": [
+    "isrm_pe",
+    "cont"
+  ],
+  "quick_replicates": 5,
+  "secondary_contrasts": [
+    [
+      "isrm_pe",
+      "substrate_local_enhanced"
+    ],
+    [
+      "cont",
+      "substrate_local_enhanced"
+    ],
+    [
+      "isrm_pe",
+      "raw_trigger"
+    ],
+    [
+      "isrm_pe",
+      "mms"
+    ],
+    [
+      "substrate_local_enhanced",
+      "persistence_cv"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "d = loss(CONT) - loss(ISRM-PE) = -0.091 [-0.120, -0.062] (CR1 t14), CONT better in 14 of 15 flights and in all three flocks; ISRM-PE vs own substrate +0.0002 [-0.0003, +0.0008]; NO_ADVANTAGE_DEMONSTRATED.",
+  "source_project": "D:/Flock ISRM (reports/pilot_pigeon_nagy2013_pe_v1_findings.md)",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 0.05,
+  "title": "Pigeon flocks (Nagy 2013): continuous salience comparator vs ISRM prediction-error-regulated switching"
+}

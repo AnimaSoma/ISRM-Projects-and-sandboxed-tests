@@ -1,0 +1,108 @@
+{
+  "alpha": 0.05,
+  "arms": [
+    {
+      "description": "lambda_eps = 0.5 as printed; debt frozen during the test episode as in the original code",
+      "name": "isrm_debt",
+      "role": "treatment"
+    },
+    {
+      "description": "lambda_eps = 0",
+      "name": "matched_no_debt",
+      "role": "comparator"
+    },
+    {
+      "description": "lambda_eps = 1.0, the value the original simulation code used",
+      "name": "isrm_debt_lambda1",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0; leaky accumulator of consequential discrepancy without settlement",
+      "name": "leaky_accumulator_no_debt",
+      "role": "control"
+    },
+    {
+      "description": "lambda_eps = 0; hazard learned from surprise, carried across the reset",
+      "name": "adaptive_hazard_no_debt",
+      "role": "control"
+    }
+  ],
+  "direction": "greater",
+  "environment": {
+    "capacities": {
+      "deferred": 0.35,
+      "resolved": 1.0
+    },
+    "controller": {
+      "broadcast_slope": 0.5,
+      "c_broadcast": 6.0,
+      "c_check": 0.35,
+      "c_hold": 0.25,
+      "c_revise": 1.0,
+      "e_check": 0.25,
+      "e_revise": 0.55,
+      "freeze_debt_in_test": true,
+      "hazard": 0.05,
+      "horizon": 8,
+      "settle_frac": 1.0,
+      "u": 1.0
+    },
+    "name": "changepoint_task",
+    "task": {
+      "accuracy": 0.62,
+      "initial_rule": 1,
+      "prep_episodes": 6,
+      "prep_trials": 40,
+      "test_trials": 40,
+      "world_hazard": 0.0
+    }
+  },
+  "equivalence_margin": 2.0,
+  "frozen_at": "2026-11-06T15:23:12Z",
+  "frozen_hash": "de3bcfcd79b0d6cb93e0e6a1048e105276cac325f190c51a3f8cdb10be3374c4",
+  "hypothesis_h0": "At lambda_eps = 0.5 the effect is about 8 trials (the printed number requires lambda_eps = 1.0, the value used in the original code); the leaky accumulator without settlement produces an effect of comparable size.",
+  "hypothesis_h1": "Under the original protocol (six wrong-from-the-start preparation episodes, test with belief 1/2, debt frozen during the test, 40-trial cap) and the printed lambda_eps = 0.5, the history effect exceeds the matched controller's by at least 10 trials.",
+  "id": "T01b_decision_debt_frozen_test_protocol",
+  "inputs": [],
+  "metric": "history effect: trials to escalation after resolved preparation minus after deferred preparation (same test stream)",
+  "metric_higher_is_better": true,
+  "n_replicates": 400,
+  "notes": "Companion to T01: identical world and controllers, but debt is frozen during the test as in the original simulation, so this spec tests whether the printed number follows from the printed parameters. Censoring at trial 41 is recorded as an extra (the original had 101/400 resolved and 17/400 deferred censored, unreported).",
+  "primary_contrast": [
+    "isrm_debt",
+    "matched_no_debt"
+  ],
+  "quick_replicates": 100,
+  "secondary_contrasts": [
+    [
+      "isrm_debt_lambda1",
+      "matched_no_debt"
+    ],
+    [
+      "isrm_debt_lambda1",
+      "isrm_debt"
+    ],
+    [
+      "leaky_accumulator_no_debt",
+      "matched_no_debt"
+    ],
+    [
+      "adaptive_hazard_no_debt",
+      "matched_no_debt"
+    ]
+  ],
+  "seeds_policy": "derived:sha256(spec_hash|arm|replicate)",
+  "source_claim": "With the parameters listed in Section 10.7 ... the ISRM agent reaches escalation after 24.5 trials following resolved preparation and 11.7 after deferred preparation, a difference of 12.7 trials (d = 1.12). Section 10.7: 'Debt decays at rho = 0.10 and enters escalation with lambda_eps = 0.5 in the ISRM agent and lambda_eps = 0 in the matched controller, which is the only difference between them.'",
+  "source_project": "D:/ISRM_manuscript1.md section 10.7 and the original sim_discriminating.py protocol as described by the theory audit",
+  "status_labels": {
+    "below_threshold": "POSITIVE_BELOW_PRACTICAL_THRESHOLD",
+    "equivalent": "EQUIVALENT_TO_COMPARATOR_WITHIN_MARGIN",
+    "harmful": "HARMFUL_IN_TESTED_RANGE",
+    "inconclusive": "INCONCLUSIVE_WIDE_INTERVAL",
+    "none": "NO_ADVANTAGE_DEMONSTRATED",
+    "protocol_failure": "PROTOCOL_FAILURE",
+    "supported": "SUPPORTED_IN_SANDBOX"
+  },
+  "threshold": 10.0,
+  "title": "Decision debt under the original simulation protocol (debt frozen during the test): do the printed parameters give 12.7 trials?"
+}
